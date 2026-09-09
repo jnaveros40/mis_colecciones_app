@@ -4,6 +4,7 @@ import Registro from './components/Registro'
 import FormularioUpload from './components/FormularioUpload'
 import Dashboard from './components/Dashboard'
 import GaleriaFiguras from './components/GaleriaFiguras'
+import Footer from './components/Footer'
 
 type VistaDashboard = 'resumen' | 'galeria' | 'agregar';
 
@@ -52,22 +53,22 @@ function App() {
           <h1 className="gradient-text" style={{ marginBottom: 0, fontSize: '1.5rem' }}>Mis Colecciones</h1>
           <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Hola, {usuarioActivo?.username}</p>
         </div>
-        
+
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
-          <button 
+          <button
             className={`nav-item ${vistaApp === 'resumen' ? 'active' : ''}`}
             onClick={() => setVistaApp('resumen')}
           >
             Dashboard
           </button>
-          <button 
+          <button
             className={`nav-item ${vistaApp === 'galeria' ? 'active' : ''}`}
             onClick={() => setVistaApp('galeria')}
           >
             Mi Colección
           </button>
-          <button 
+          <button
             className={`nav-item ${vistaApp === 'agregar' ? 'active' : ''}`}
             onClick={() => setVistaApp('agregar')}
           >
@@ -89,21 +90,21 @@ function App() {
 
       {/* Mobile Bottom Navigation */}
       <nav className="mobile-bottom-nav">
-        <button 
+        <button
           className={`nav-item ${vistaApp === 'resumen' ? 'active' : ''}`}
           onClick={() => setVistaApp('resumen')}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
           Inicio
         </button>
-        <button 
+        <button
           className={`nav-item ${vistaApp === 'galeria' ? 'active' : ''}`}
           onClick={() => setVistaApp('galeria')}
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
           Galería
         </button>
-        <button 
+        <button
           className={`nav-item ${vistaApp === 'agregar' ? 'active' : ''}`}
           onClick={() => setVistaApp('agregar')}
         >
@@ -115,6 +116,7 @@ function App() {
           Salir
         </button>
       </nav>
+      <Footer />
     </>
   )
 }
