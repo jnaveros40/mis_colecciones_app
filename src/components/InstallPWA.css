@@ -1,0 +1,213 @@
+.install-pwa-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.install-pwa-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md) var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.install-pwa-icon {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.install-pwa-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    opacity: 0.9;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.install-pwa-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.install-pwa-text h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: var(--spacing-xs);
+  letter-spacing: -0.5px;
+}
+
+.install-pwa-text p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+.install-pwa-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.install-pwa-button {
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.8125rem;
+}
+
+.install-primary {
+  background: rgba(255, 255, 255, 0.95);
+  color: #6366f1;
+  padding: 10px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+}
+
+.install-primary:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.install-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.install-dismiss {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  padding: var(--spacing-sm);
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.install-dismiss:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 1);
+}
+
+.install-dismiss:active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .install-pwa-content {
+    padding: var(--spacing-md) var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .install-pwa-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .install-pwa-text h3 {
+    font-size: 1rem;
+  }
+
+  .install-pwa-text p {
+    font-size: 0.875rem;
+  }
+
+  .install-primary {
+    padding: 8px 20px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .install-pwa-banner {
+    border-top: 3px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .install-pwa-content {
+    flex-wrap: wrap;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .install-pwa-icon {
+    width: 48px;
+    height: 48px;
+    order: 0;
+  }
+
+  .install-pwa-text {
+    flex-basis: 100%;
+    order: 1;
+    margin-top: var(--spacing-sm);
+  }
+
+  .install-pwa-text h3 {
+    font-size: 0.9375rem;
+  }
+
+  .install-pwa-text p {
+    font-size: 0.8125rem;
+  }
+
+  .install-pwa-actions {
+    order: 2;
+    width: 100%;
+    margin-top: var(--spacing-sm);
+  }
+
+  .install-primary {
+    flex: 1;
+    padding: 8px 16px;
+    font-size: 0.75rem;
+  }
+}
