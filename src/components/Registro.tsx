@@ -44,8 +44,8 @@ export default function Registro({ onRegisterSuccess, onGoToLogin }: RegistroPro
   return (
     <div className="auth-container">
       <div className="glass-panel auth-card">
-        <h2>Crear Cuenta</h2>
-        <p className="subtitle">Únete y empieza a registrar tus figuras</p>
+        <h2 className="gradient-text" style={{ textAlign: 'center', fontSize: '1.8rem' }}>Crear Cuenta</h2>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2rem' }}>Únete para organizar tu colección</p>
         
         <form onSubmit={handleRegister}>
           <div className="form-group">

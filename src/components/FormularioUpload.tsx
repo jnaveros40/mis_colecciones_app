@@ -85,36 +85,38 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
 
   return (
     <div className="glass-panel" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h2>Añadir Nueva Figura</h2>
+      <h2 className="gradient-text">Añadir Nueva Figura</h2>
+      
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Nombre de la Figura *</label>
           <input 
             type="text" 
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            placeholder="Ej: Goku S.H.Figuarts"
-            required
+            value={nombre} 
+            onChange={(e) => setNombre(e.target.value)} 
+            required 
+            placeholder="Ej. Goku Super Saiyan"
           />
         </div>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+
+        <div className="form-grid">
           <div className="form-group">
             <label>Serie / Anime</label>
             <input 
               type="text" 
-              value={serie}
-              onChange={(e) => setSerie(e.target.value)}
-              placeholder="Ej: Dragon Ball Z"
+              value={serie} 
+              onChange={(e) => setSerie(e.target.value)} 
+              placeholder="Ej. Dragon Ball Z"
             />
           </div>
+
           <div className="form-group">
             <label>Marca / Fabricante</label>
             <input 
               type="text" 
-              value={marca}
-              onChange={(e) => setMarca(e.target.value)}
-              placeholder="Ej: Bandai"
+              value={marca} 
+              onChange={(e) => setMarca(e.target.value)} 
+              placeholder="Ej. S.H. Figuarts"
             />
           </div>
         </div>
@@ -123,33 +125,36 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
           <label>Precio de Compra</label>
           <input 
             type="number" 
-            step="0.01"
-            value={precioCompra}
-            onChange={(e) => setPrecioCompra(e.target.value)}
-            placeholder="Ej: 150000"
+            value={precioCompra} 
+            onChange={(e) => setPrecioCompra(e.target.value)} 
+            placeholder="150000"
+            min="0"
           />
         </div>
 
         <div className="form-group">
           <label>Foto *</label>
-          <input 
-            type="file" 
-            accept="image/*"
-            onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-            required
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+              required
+              id="file-upload"
+            />
+          </div>
         </div>
-        
-        <button type="submit" disabled={cargando} className="btn">
-          {cargando ? 'Procesando...' : 'Guardar Figura'}
+
+        <button type="submit" className="btn" disabled={cargando}>
+          {cargando ? 'Guardando...' : 'Guardar Figura'}
         </button>
+
+        {mensaje && (
+          <div className={`alert ${esError ? 'alert-error' : 'alert-success'}`} style={{ marginTop: '1rem' }}>
+            {mensaje}
+          </div>
+        )}
       </form>
-      
-      {mensaje && (
-        <div className={`alert ${esError ? 'alert-error' : 'alert-success'}`}>
-          {mensaje}
-        </div>
-      )}
     </div>
   );
 }

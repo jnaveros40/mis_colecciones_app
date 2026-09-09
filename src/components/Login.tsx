@@ -41,8 +41,8 @@ export default function Login({ onLoginSuccess, onGoToRegister }: LoginProps) {
   return (
     <div className="auth-container">
       <div className="glass-panel auth-card">
-        <h2>Bienvenido de Nuevo</h2>
-        <p className="subtitle">Ingresa para gestionar tu colección de figuras</p>
+        <h2 className="gradient-text" style={{ textAlign: 'center' }}>Bienvenido de Nuevo</h2>
+        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2rem' }}>Ingresa para gestionar tu colección de figuras</p>
         
         <form onSubmit={handleLogin}>
           <div className="form-group">
