@@ -37,7 +37,7 @@ export async function subirASupabaseStorage(fileComprimido: File, bucketName: st
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
   const filePath = `imagenes/${fileName}`;
 
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from(bucketName)
     .upload(filePath, fileComprimido, {
       cacheControl: '3600',
