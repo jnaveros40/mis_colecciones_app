@@ -2,18 +2,26 @@ import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { optimizarImagen, subirASupabaseStorage } from '../services/imageService';
 
-export default function FormularioUpload() {
+interface FormularioUploadProps {
+  usuarioId: number;
+  onSuccess?: () => void;
+}
+
+export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUploadProps) {
   const [nombre, setNombre] = useState('');
-  const [codigoInterno, setCodigoInterno] = useState('');
+  const [serie, setSerie] = useState('');
+  const [marca, setMarca] = useState('');
+  const [precioCompra, setPrecioCompra] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState('');
   const [esError, setEsError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nombre || !codigoInterno || !file) {
-      setMensaje('Por favor, completa todos los campos requeridos y selecciona una imagen.');
+    if (!nombre || !file) {
+      setMensaje('El nombre y la foto son obligatorios.');
       setEsError(true);
       return;
     }
@@ -23,6 +31,9 @@ export default function FormularioUpload() {
     setEsError(false);
 
     try {
+      // Generar código interno automáticamente
+      const codigoInterno = `FIG-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 1000)}`;
+
       // 1. Optimizar imagen
       setMensaje('Optimizando imagen...');
       const imagenOptimizada = await optimizarImagen(file);
@@ -37,8 +48,12 @@ export default function FormularioUpload() {
         .from('figuras')
         .insert([
           { 
-            nombre, 
+            usuario_id: usuarioId,
             codigo_interno: codigoInterno,
+            nombre, 
+            serie,
+            marca,
+            precio_compra: precioCompra ? parseFloat(precioCompra) : null,
             foto_url
           }
         ]);
@@ -49,9 +64,16 @@ export default function FormularioUpload() {
 
       setMensaje('¡Figura guardada exitosamente!');
       setEsError(false);
+      
+      // Limpiar formulario
       setNombre('');
-      setCodigoInterno('');
+      setSerie('');
+      setMarca('');
+      setPrecioCompra('');
       setFile(null);
+      
+      if (onSuccess) onSuccess();
+
     } catch (error: any) {
       console.error(error);
       setMensaje(`Error: ${error.message || 'Ocurrió un error inesperado'}`);
@@ -62,21 +84,11 @@ export default function FormularioUpload() {
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '2rem', maxWidth: '500px', margin: '0 auto' }}>
-      <h2>Agregar Nueva Figura</h2>
+    <div className="glass-panel" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
+      <h2>Añadir Nueva Figura</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Código Interno</label>
-          <input 
-            type="text" 
-            value={codigoInterno}
-            onChange={(e) => setCodigoInterno(e.target.value)}
-            placeholder="EJ: FIG-001"
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Nombre de la Figura</label>
+          <label>Nombre de la Figura *</label>
           <input 
             type="text" 
             value={nombre}
@@ -85,8 +97,41 @@ export default function FormularioUpload() {
             required
           />
         </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-group">
+            <label>Serie / Anime</label>
+            <input 
+              type="text" 
+              value={serie}
+              onChange={(e) => setSerie(e.target.value)}
+              placeholder="Ej: Dragon Ball Z"
+            />
+          </div>
+          <div className="form-group">
+            <label>Marca / Fabricante</label>
+            <input 
+              type="text" 
+              value={marca}
+              onChange={(e) => setMarca(e.target.value)}
+              placeholder="Ej: Bandai"
+            />
+          </div>
+        </div>
+
         <div className="form-group">
-          <label>Foto</label>
+          <label>Precio de Compra</label>
+          <input 
+            type="number" 
+            step="0.01"
+            value={precioCompra}
+            onChange={(e) => setPrecioCompra(e.target.value)}
+            placeholder="Ej: 150000"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Foto *</label>
           <input 
             type="file" 
             accept="image/*"
@@ -94,14 +139,12 @@ export default function FormularioUpload() {
             required
           />
         </div>
-        <button 
-          type="submit" 
-          disabled={cargando}
-          className="btn"
-        >
+        
+        <button type="submit" disabled={cargando} className="btn">
           {cargando ? 'Procesando...' : 'Guardar Figura'}
         </button>
       </form>
+      
       {mensaje && (
         <div className={`alert ${esError ? 'alert-error' : 'alert-success'}`}>
           {mensaje}

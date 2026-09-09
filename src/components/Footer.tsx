@@ -18,14 +18,14 @@ const Footer = () => {
         <div className="footer-section footer-brand">
           <div className="brand-logo">
             <img 
-              src="/web/icon-192.png" 
-              alt="MediHogar Logo"
+              src="/vite.svg" 
+              alt="Mis Colecciones Logo"
               className="brand-logo-img"
             />
           </div>
           <div className="brand-text">
-            <h3>MediHogar</h3>
-            <p>Tu salud al alcance de un click</p>
+            <h3>Mis Colecciones</h3>
+            <p>Gestiona tu inventario de figuras</p>
           </div>
         </div>
 
@@ -93,7 +93,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Todos los derechos reservados
           </p>
           <p className="footer-entity">
-            MediHogar
+            Mis Colecciones
           </p>
         </div>
       </div>
