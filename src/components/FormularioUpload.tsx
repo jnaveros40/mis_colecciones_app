@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { optimizarImagen, subirASupabaseStorage } from '../services/imageService';
 
@@ -13,7 +13,7 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
   const [marca, setMarca] = useState('');
   const [precioCompra, setPrecioCompra] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  
+
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState('');
   const [esError, setEsError] = useState(false);
@@ -44,13 +44,13 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
 
       // 3. Guardar registro en base de datos
       setMensaje('Guardando registro...');
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('figuras')
         .insert([
-          { 
+          {
             usuario_id: usuarioId,
             codigo_interno: codigoInterno,
-            nombre, 
+            nombre,
             serie,
             marca,
             precio_compra: precioCompra ? parseFloat(precioCompra) : null,
@@ -64,14 +64,14 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
 
       setMensaje('¡Figura guardada exitosamente!');
       setEsError(false);
-      
+
       // Limpiar formulario
       setNombre('');
       setSerie('');
       setMarca('');
       setPrecioCompra('');
       setFile(null);
-      
+
       if (onSuccess) onSuccess();
 
     } catch (error: any) {
@@ -86,15 +86,15 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
   return (
     <div className="glass-panel" style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
       <h2 className="gradient-text">Añadir Nueva Figura</h2>
-      
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Nombre de la Figura *</label>
-          <input 
-            type="text" 
-            value={nombre} 
-            onChange={(e) => setNombre(e.target.value)} 
-            required 
+          <input
+            type="text"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            required
             placeholder="Ej. Goku Super Saiyan"
           />
         </div>
@@ -102,20 +102,20 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
         <div className="form-grid">
           <div className="form-group">
             <label>Serie / Anime</label>
-            <input 
-              type="text" 
-              value={serie} 
-              onChange={(e) => setSerie(e.target.value)} 
+            <input
+              type="text"
+              value={serie}
+              onChange={(e) => setSerie(e.target.value)}
               placeholder="Ej. Dragon Ball Z"
             />
           </div>
 
           <div className="form-group">
             <label>Marca / Fabricante</label>
-            <input 
-              type="text" 
-              value={marca} 
-              onChange={(e) => setMarca(e.target.value)} 
+            <input
+              type="text"
+              value={marca}
+              onChange={(e) => setMarca(e.target.value)}
               placeholder="Ej. S.H. Figuarts"
             />
           </div>
@@ -123,10 +123,10 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
 
         <div className="form-group">
           <label>Precio de Compra</label>
-          <input 
-            type="number" 
-            value={precioCompra} 
-            onChange={(e) => setPrecioCompra(e.target.value)} 
+          <input
+            type="number"
+            value={precioCompra}
+            onChange={(e) => setPrecioCompra(e.target.value)}
             placeholder="150000"
             min="0"
           />
@@ -135,9 +135,9 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
         <div className="form-group">
           <label>Foto *</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <input 
-              type="file" 
-              accept="image/*" 
+            <input
+              type="file"
+              accept="image/*"
               onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
               required
               id="file-upload"
