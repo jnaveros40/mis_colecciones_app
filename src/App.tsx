@@ -50,9 +50,17 @@ function App() {
   return (
     <>
       <header className="top-nav">
-        <div>
-          <h1 className="gradient-text" style={{ marginBottom: 0, fontSize: '1.5rem' }}>Mis Colecciones</h1>
-          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Hola, {usuarioActivo?.username}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <img 
+            src="/icon-192.png" 
+            alt="Mis Colecciones Logo" 
+            style={{ width: '42px', height: '42px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.3)', objectFit: 'cover' }}
+            onError={(e) => { (e.target as HTMLImageElement).src = '/web/icon-192.png'; }}
+          />
+          <div>
+            <h1 className="gradient-text" style={{ marginBottom: 0, fontSize: '1.45rem' }}>Mi coleccion By IngNavs</h1>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Hola, {usuarioActivo?.username}</p>
+          </div>
         </div>
 
         {/* Desktop Navigation */}

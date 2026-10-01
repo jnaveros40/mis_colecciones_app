@@ -89,15 +89,16 @@ export default function InstallPWA() {
       <div className="install-pwa-content">
         <div className="install-pwa-icon">
           <img 
-            src="/web/icon-192.png" 
-            alt="MediHogar Logo"
+            src="/icon-192.png" 
+            alt="Mi coleccion By IngNavs"
             className="install-pwa-logo"
+            onError={(e) => { (e.target as HTMLImageElement).src = '/web/icon-192.png'; }}
           />
         </div>
         
         <div className="install-pwa-text">
-          <h3>📱 Instalar MediHogar</h3>
-          <p>Acceso rápido a tu dispositivo y funciona sin conexión</p>
+          <h3>📱 Instalar Mi coleccion By IngNavs</h3>
+          <p>Acceso rápido en tu dispositivo y funciona sin conexión</p>
         </div>
         
         <div className="install-pwa-actions">

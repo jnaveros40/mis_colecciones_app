@@ -18,17 +18,17 @@ const Footer = () => {
         <div className="footer-section footer-brand">
           <div className="brand-logo">
             <img 
-              src="/favicon.svg" 
+              src="/icon-192.png" 
               alt="Mis Colecciones Logo"
               className="brand-logo-img"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
+                target.src = '/web/icon-192.png';
               }}
             />
           </div>
           <div className="brand-text">
-            <h3>Mis Colecciones</h3>
+            <h3>Mi coleccion By IngNavs</h3>
             <p>Gestiona tu inventario de figuras</p>
           </div>
         </div>
@@ -97,7 +97,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Todos los derechos reservados
           </p>
           <p className="footer-entity">
-            Mis Colecciones
+            Mi coleccion By IngNavs
           </p>
         </div>
       </div>

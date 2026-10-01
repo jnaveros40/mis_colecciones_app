@@ -47,6 +47,14 @@ export default function Login({ onLoginSuccess, onGoToRegister }: LoginProps) {
     <>
       <div className="auth-container">
         <div className="glass-panel auth-card">
+          <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+            <img 
+              src="/icon-192.png" 
+              alt="Mis Colecciones" 
+              style={{ width: '70px', height: '70px', borderRadius: '18px', boxShadow: '0 6px 20px rgba(139, 92, 246, 0.35)', objectFit: 'cover' }}
+              onError={(e) => { (e.target as HTMLImageElement).src = '/web/icon-192.png'; }}
+            />
+          </div>
           <h2 className="gradient-text" style={{ textAlign: 'center' }}>Bienvenido de Nuevo</h2>
           <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2rem' }}>Ingresa para gestionar tu colección de figuras</p>
 

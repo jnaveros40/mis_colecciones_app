@@ -137,7 +137,7 @@ export default function GestionCatalogos({ usuarioId }: GestionCatalogosProps) {
     setGuardando(true);
     setMensaje(null);
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from(configActual.tabla)
         .insert([
           {
@@ -219,8 +219,8 @@ export default function GestionCatalogos({ usuarioId }: GestionCatalogosProps) {
     const matchEstado = filterActivo === 'todos'
       ? true
       : filterActivo === 'activos'
-      ? item.activo
-      : !item.activo;
+        ? item.activo
+        : !item.activo;
     return matchSearch && matchEstado;
   });
 
