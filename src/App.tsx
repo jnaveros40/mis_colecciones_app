@@ -5,6 +5,7 @@ import FormularioUpload from './components/FormularioUpload'
 import Dashboard from './components/Dashboard'
 import GaleriaFiguras from './components/GaleriaFiguras'
 import GestionCatalogos from './components/GestionCatalogos'
+import InstallPWA from './components/InstallPWA'
 import Footer from './components/Footer'
 
 type VistaDashboard = 'resumen' | 'galeria' | 'agregar' | 'configuracion';
@@ -40,11 +41,21 @@ function App() {
   }
 
   if (vistaAuth === 'login') {
-    return <Login onLoginSuccess={manejarLoginExitoso} onGoToRegister={() => setVistaAuth('registro')} />
+    return (
+      <>
+        <Login onLoginSuccess={manejarLoginExitoso} onGoToRegister={() => setVistaAuth('registro')} />
+        <InstallPWA />
+      </>
+    );
   }
 
   if (vistaAuth === 'registro') {
-    return <Registro onRegisterSuccess={manejarLoginExitoso} onGoToLogin={() => setVistaAuth('login')} />
+    return (
+      <>
+        <Registro onRegisterSuccess={manejarLoginExitoso} onGoToLogin={() => setVistaAuth('login')} />
+        <InstallPWA />
+      </>
+    );
   }
 
   return (
@@ -140,6 +151,7 @@ function App() {
           Salir
         </button>
       </nav>
+      <InstallPWA />
       <Footer />
     </>
   )
