@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import './GestionCatalogos.css';
 
 interface GestionCatalogosProps {
-  usuarioId: number;
+  usuarioId?: number;
 }
 
 type TipoCatalogo = 'universos' | 'lineas' | 'marcas' | 'fabricantes';
@@ -76,17 +76,20 @@ export default function GestionCatalogos({ usuarioId }: GestionCatalogosProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingNombre, setEditingNombre] = useState('');
 
-  const configActual = CATALOGOS.find(c => c.key === catalogoActual)!;
+  const configActual = CATALOGOS.find(c => c.key === catalogoActual) || CATALOGOS[0];
 
   // Cargar contadores de todos los catálogos
   const cargarContadores = async () => {
     try {
       const countsObj: Record<TipoCatalogo, number> = { universos: 0, lineas: 0, marcas: 0, fabricantes: 0 };
       for (const cat of CATALOGOS) {
-        const { count, error } = await supabase
-          .from(cat.tabla)
-          .select('id', { count: 'exact', head: true })
-          .or(`usuario_id.eq.${usuarioId},usuario_id.is.null`);
+        let query = supabase.from(cat.tabla).select('id', { count: 'exact', head: true });
+        if (usuarioId && usuarioId > 0) {
+          query = query.or(`usuario_id.eq.${usuarioId},usuario_id.is.null`);
+        } else {
+          query = query.is('usuario_id', null);
+        }
+        const { count, error } = await query;
         if (!error && count !== null) {
           countsObj[cat.key] = count;
         }
@@ -102,11 +105,13 @@ export default function GestionCatalogos({ usuarioId }: GestionCatalogosProps) {
     setLoading(true);
     setMensaje(null);
     try {
-      const { data, error } = await supabase
-        .from(configActual.tabla)
-        .select('*')
-        .or(`usuario_id.eq.${usuarioId},usuario_id.is.null`)
-        .order('nombre', { ascending: true });
+      let query = supabase.from(configActual.tabla).select('*').order('nombre', { ascending: true });
+      if (usuarioId && usuarioId > 0) {
+        query = query.or(`usuario_id.eq.${usuarioId},usuario_id.is.null`);
+      } else {
+        query = query.is('usuario_id', null);
+      }
+      const { data, error } = await query;
 
       if (error) throw error;
       setItems(data || []);
@@ -133,6 +138,11 @@ export default function GestionCatalogos({ usuarioId }: GestionCatalogosProps) {
   const handleCrear = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nuevoNombre.trim()) return;
+
+    if (!usuarioId || usuarioId <= 0) {
+      setMensaje({ texto: 'Sesión no detectada. Por favor recarga o vuelve a iniciar sesión.', tipo: 'error' });
+      return;
+    }
 
     setGuardando(true);
     setMensaje(null);
@@ -225,7 +235,7 @@ export default function GestionCatalogos({ usuarioId }: GestionCatalogosProps) {
   });
 
   return (
-    <div className="catalogos-container animate-slide-up">
+    <div className="catalogos-container">
       <div className="catalogos-header">
         <h2 className="gradient-text">Configuración de Catálogos</h2>
         <p style={{ color: 'var(--text-muted)' }}>

@@ -7,6 +7,7 @@ import GaleriaFiguras from './components/GaleriaFiguras'
 import GestionCatalogos from './components/GestionCatalogos'
 import InstallPWA from './components/InstallPWA'
 import Footer from './components/Footer'
+import ErrorBoundary from './components/ErrorBoundary'
 
 type VistaDashboard = 'resumen' | 'galeria' | 'agregar' | 'configuracion';
 
@@ -19,10 +20,19 @@ function App() {
     const userGuardado = localStorage.getItem('usuario_figuras')
     if (userGuardado) {
       try {
-        setUsuarioActivo(JSON.parse(userGuardado))
-        setVistaAuth('autenticado')
+        const parsed = JSON.parse(userGuardado)
+        if (parsed && typeof parsed === 'object' && parsed.id) {
+          setUsuarioActivo(parsed)
+          setVistaAuth('autenticado')
+        } else {
+          // Si el objeto de sesión no tiene un id válido, limpiar y pedir login
+          localStorage.removeItem('usuario_figuras')
+          setVistaAuth('login')
+        }
       } catch (e) {
-        console.error(e)
+        console.error('Error parseando usuario de localStorage:', e)
+        localStorage.removeItem('usuario_figuras')
+        setVistaAuth('login')
       }
     }
   }, [])
@@ -58,6 +68,8 @@ function App() {
     );
   }
 
+  const currentUserId = usuarioActivo?.id || 0;
+
   return (
     <>
       <header className="top-nav">
@@ -70,7 +82,7 @@ function App() {
           />
           <div>
             <h1 className="gradient-text" style={{ marginBottom: 0, fontSize: '1.45rem' }}>Mi coleccion By IngNavs</h1>
-            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Hola, {usuarioActivo?.username}</p>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem' }}>Hola, {usuarioActivo?.username || 'Coleccionista'}</p>
           </div>
         </div>
 
@@ -107,13 +119,15 @@ function App() {
         </nav>
       </header>
 
-      <div className="app-container animate-slide-up">
-        <main>
-          {vistaApp === 'resumen' && <Dashboard usuarioId={usuarioActivo.id} />}
-          {vistaApp === 'galeria' && <GaleriaFiguras usuarioId={usuarioActivo.id} />}
-          {vistaApp === 'agregar' && <FormularioUpload usuarioId={usuarioActivo.id} onSuccess={() => setVistaApp('galeria')} />}
-          {vistaApp === 'configuracion' && <GestionCatalogos usuarioId={usuarioActivo.id} />}
-        </main>
+      <div className="app-container">
+        <ErrorBoundary>
+          <main>
+            {vistaApp === 'resumen' && <Dashboard usuarioId={currentUserId} />}
+            {vistaApp === 'galeria' && <GaleriaFiguras usuarioId={currentUserId} />}
+            {vistaApp === 'agregar' && <FormularioUpload usuarioId={currentUserId} onSuccess={() => setVistaApp('galeria')} />}
+            {vistaApp === 'configuracion' && <GestionCatalogos usuarioId={currentUserId} />}
+          </main>
+        </ErrorBoundary>
       </div>
 
       {/* Mobile Bottom Navigation */}

@@ -2,6 +2,9 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 1rem 0;
+  isolation: isolate;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .catalogos-header {
@@ -74,8 +77,11 @@
 
 .catalogos-table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
+  isolation: isolate;
+  background: rgba(15, 23, 42, 0.6);
 }
 
 .catalogos-table {
