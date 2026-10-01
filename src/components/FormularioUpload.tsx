@@ -111,7 +111,7 @@ export default function FormularioUpload({ usuarioId, onSuccess }: FormularioUpl
       if (file) {
         setMensaje({ texto: 'Optimizando y subiendo imagen...', tipo: 'success' });
         const imagenOptimizada = await optimizarImagen(file);
-        foto_url = await subirASupabaseStorage(imagenOptimizada, 'figuras');
+        foto_url = await subirASupabaseStorage(imagenOptimizada, 'coleccion');
       }
 
       // 2. Guardar registro en coleccion_figuras

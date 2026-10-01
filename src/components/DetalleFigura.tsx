@@ -36,9 +36,10 @@ export default function DetalleFigura({ figura, onClose, onFiguraBorrada }: Deta
     setLoading(true);
     try {
       if (figura.foto_url) {
-        const path = figura.foto_url.split('/').pop();
-        if (path) {
-          await supabase.storage.from('figuras').remove([path]);
+        const parts = figura.foto_url.split('/coleccion/');
+        if (parts.length > 1) {
+          const filePath = parts[1];
+          await supabase.storage.from('coleccion').remove([filePath]);
         }
       }
 

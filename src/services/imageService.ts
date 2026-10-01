@@ -32,7 +32,7 @@ export async function optimizarImagen(file: File): Promise<File> {
  * @param bucketName Nombre del bucket en Supabase (ej: 'figuras')
  * @returns La URL pública segura de la imagen subida
  */
-export async function subirASupabaseStorage(fileComprimido: File, bucketName: string = 'figuras'): Promise<string> {
+export async function subirASupabaseStorage(fileComprimido: File, bucketName: string = 'coleccion'): Promise<string> {
   const fileExt = fileComprimido.name.split('.').pop() || 'webp';
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
   const filePath = `imagenes/${fileName}`;

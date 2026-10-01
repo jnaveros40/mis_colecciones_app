@@ -91,7 +91,7 @@ export default function FormularioEditarFigura({ figura, onCancel, onSaved }: Fo
 
       if (newFile) {
         const optimizada = await optimizarImagen(newFile);
-        foto_url = await subirASupabaseStorage(optimizada, 'figuras');
+        foto_url = await subirASupabaseStorage(optimizada, 'coleccion');
       }
 
       const payload = {

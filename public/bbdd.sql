@@ -66,3 +66,24 @@ ALTER TABLE coleccion_lineas DISABLE ROW LEVEL SECURITY;
 ALTER TABLE coleccion_marcas DISABLE ROW LEVEL SECURITY;
 ALTER TABLE coleccion_fabricantes DISABLE ROW LEVEL SECURITY;
 ALTER TABLE coleccion_figuras DISABLE ROW LEVEL SECURITY;
+
+-- 5. Políticas para el Bucket de Storage 'coleccion'
+-- Lectura pública
+CREATE POLICY "Lectura publica bucket coleccion"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'coleccion');
+
+-- Subida pública de imágenes
+CREATE POLICY "Subida publica bucket coleccion"
+ON storage.objects FOR INSERT
+WITH CHECK (bucket_id = 'coleccion');
+
+-- Actualización pública
+CREATE POLICY "Actualizacion publica bucket coleccion"
+ON storage.objects FOR UPDATE
+USING (bucket_id = 'coleccion');
+
+-- Eliminación pública
+CREATE POLICY "Eliminacion publica bucket coleccion"
+ON storage.objects FOR DELETE
+USING (bucket_id = 'coleccion');
