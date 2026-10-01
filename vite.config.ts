@@ -12,23 +12,34 @@ export default defineConfig({
         enabled: true
       },
       manifest: {
-        name: 'Mis Colecciones de Figuras',
-        short_name: 'Colección',
-        description: 'Aplicación para gestionar mi colección de figuras de anime.',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        name: 'Mi coleccion By IngNavs',
+        short_name: 'Mi coleccion By IngNavs',
+        description: 'Aplicación para gestionar tu colección de figuras de acción y colección.',
+        theme_color: '#0f172a',
+        background_color: '#0f172a',
         display: 'standalone',
         icons: [
           {
-            src: 'pwa-192x192.png',
+            src: '/icon-192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'pwa-512x512.png',
+            src: '/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          },
+          {
+            src: '/icon-192-maskable.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: '/icon-512-maskable.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'maskable'
           }
         ]
       }
