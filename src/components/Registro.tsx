@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import Footer from './Footer';
 
 interface RegistroProps {
   onRegisterSuccess: (user: any) => void;
@@ -42,45 +43,48 @@ export default function Registro({ onRegisterSuccess, onGoToLogin }: RegistroPro
   };
 
   return (
-    <div className="auth-container">
-      <div className="glass-panel auth-card">
-        <h2 className="gradient-text" style={{ textAlign: 'center', fontSize: '1.8rem' }}>Crear Cuenta</h2>
-        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2rem' }}>Únete para organizar tu colección</p>
-        
-        <form onSubmit={handleRegister}>
-          <div className="form-group">
-            <label>Nombre de Usuario</label>
-            <input 
-              type="text" 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Ej: nuevo_coleccionista"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Contraseña</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={4}
-            />
-          </div>
+    <>
+      <div className="auth-container">
+        <div className="glass-panel auth-card">
+          <h2 className="gradient-text" style={{ textAlign: 'center', fontSize: '1.8rem' }}>Crear Cuenta</h2>
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2rem' }}>Únete para organizar tu colección</p>
           
-          <button type="submit" className="btn" disabled={loading}>
-            {loading ? 'Creando cuenta...' : 'Registrarse'}
-          </button>
-        </form>
+          <form onSubmit={handleRegister}>
+            <div className="form-group">
+              <label>Nombre de Usuario</label>
+              <input 
+                type="text" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Ej: nuevo_coleccionista"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Contraseña</label>
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                minLength={4}
+              />
+            </div>
+            
+            <button type="submit" className="btn" disabled={loading}>
+              {loading ? 'Creando cuenta...' : 'Registrarse'}
+            </button>
+          </form>
 
-        {error && <div className="alert alert-error">{error}</div>}
+          {error && <div className="alert alert-error">{error}</div>}
 
-        <div className="auth-link">
-          ¿Ya tienes cuenta? <span onClick={onGoToLogin}>Inicia Sesión</span>
+          <div className="auth-link">
+            ¿Ya tienes cuenta? <span onClick={onGoToLogin}>Inicia Sesión</span>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }

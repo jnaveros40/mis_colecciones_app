@@ -18,9 +18,13 @@ const Footer = () => {
         <div className="footer-section footer-brand">
           <div className="brand-logo">
             <img 
-              src="/vite.svg" 
+              src="/favicon.svg" 
               alt="Mis Colecciones Logo"
               className="brand-logo-img"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
             />
           </div>
           <div className="brand-text">

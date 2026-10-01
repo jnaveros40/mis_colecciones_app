@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import Footer from './Footer';
 
 interface LoginProps {
   onLoginSuccess: (user: any) => void;
@@ -39,44 +40,47 @@ export default function Login({ onLoginSuccess, onGoToRegister }: LoginProps) {
   };
 
   return (
-    <div className="auth-container">
-      <div className="glass-panel auth-card">
-        <h2 className="gradient-text" style={{ textAlign: 'center' }}>Bienvenido de Nuevo</h2>
-        <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2rem' }}>Ingresa para gestionar tu colección de figuras</p>
-        
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label>Nombre de Usuario</label>
-            <input 
-              type="text" 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Ej: otaku_collector"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Contraseña</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-            />
-          </div>
-          
-          <button type="submit" className="btn" disabled={loading}>
-            {loading ? 'Ingresando...' : 'Iniciar Sesión'}
-          </button>
-        </form>
+    <>
+      <div className="auth-container">
+        <div className="glass-panel auth-card">
+          <h2 className="gradient-text" style={{ textAlign: 'center' }}>Bienvenido de Nuevo</h2>
+          <p style={{ color: 'var(--text-muted)', textAlign: 'center', marginBottom: '2rem' }}>Ingresa para gestionar tu colección de figuras</p>
 
-        {error && <div className="alert alert-error">{error}</div>}
+          <form onSubmit={handleLogin}>
+            <div className="form-group">
+              <label>Nombre de Usuario</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Ej: otaku_collector"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Contraseña</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+              />
+            </div>
 
-        <div className="auth-link">
-          ¿No tienes una cuenta? <span onClick={onGoToRegister}>Regístrate aquí</span>
+            <button type="submit" className="btn" disabled={loading}>
+              {loading ? 'Ingresando...' : 'Iniciar Sesión'}
+            </button>
+          </form>
+
+          {error && <div className="alert alert-error">{error}</div>}
+
+          <div className="auth-link">
+            ¿No tienes una cuenta? <span onClick={onGoToRegister}>Regístrate aquí</span>
+          </div>
         </div>
       </div>
-    </div>
+      <Footer />
+    </>
   );
 }
