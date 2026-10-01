@@ -64,7 +64,7 @@ const Footer = () => {
               </button>
               <p className="developer-version">
                 <span className="status-dot"></span>
-                Versión 2.0.0
+                Versión 2.1.0
               </p>
             </div>
 
