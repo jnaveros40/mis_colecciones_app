@@ -21,7 +21,7 @@ export default function Registro({ onRegisterSuccess, onGoToLogin }: RegistroPro
     try {
       // Intentar insertar el nuevo usuario
       const { data, error: supaError } = await supabase
-        .from('usuarios')
+        .from('coleccion_usuarios')
         .insert([{ username, password }])
         .select()
         .single();
@@ -30,7 +30,7 @@ export default function Registro({ onRegisterSuccess, onGoToLogin }: RegistroPro
         if (supaError.code === '23505') { // Unique violation
           throw new Error('El nombre de usuario ya está en uso. Elige otro.');
         }
-        throw new Error('Error al registrar el usuario.');
+        throw new Error(supaError.message || 'Error al registrar el usuario.');
       }
 
       // Éxito

@@ -20,13 +20,17 @@ export default function Login({ onLoginSuccess, onGoToRegister }: LoginProps) {
 
     try {
       const { data, error: supaError } = await supabase
-        .from('usuarios')
+        .from('coleccion_usuarios')
         .select('*')
         .eq('username', username)
         .eq('password', password)
         .single();
 
-      if (supaError || !data) {
+      if (supaError) {
+        throw new Error(supaError.message || 'Error al conectar con la base de datos.');
+      }
+
+      if (!data) {
         throw new Error('Credenciales inválidas. Verifica tu usuario y contraseña.');
       }
 

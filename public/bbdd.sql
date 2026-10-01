@@ -1,7 +1,6 @@
 -- Tabla principal: Figuras
-CREATE TABLE figuras (
+CREATE TABLE coleccion_figuras (
     id SERIAL PRIMARY KEY,
-    codigo_interno VARCHAR(20) UNIQUE NOT NULL,
     nombre VARCHAR(255) NOT NULL,
     serie VARCHAR(255),
     marca VARCHAR(255),
@@ -85,3 +84,12 @@ FROM accesorios a
 JOIN figuras f ON a.figura_id = f.id
 WHERE a.estado = 'Faltante'
 ORDER BY f.codigo_interno;
+
+-- Tabla usuarios
+CREATE TABLE coleccion_usuarios (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nombre VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
