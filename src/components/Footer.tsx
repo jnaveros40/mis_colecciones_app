@@ -17,8 +17,8 @@ const Footer = () => {
         {/* Izquierda - Brand */}
         <div className="footer-section footer-brand">
           <div className="brand-logo">
-            <img 
-              src="/icon-192.png" 
+            <img
+              src="/icon-192.png"
               alt="Mis Colecciones Logo"
               className="brand-logo-img"
               onError={(e) => {
@@ -38,8 +38,8 @@ const Footer = () => {
           <div className="developer-card">
             {/* Logo IngNavs */}
             <div className="developer-logo">
-              <img 
-                src="/IngNavs.png" 
+              <img
+                src="/IngNavs.png"
                 alt="IngNavs Logo"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
@@ -64,7 +64,7 @@ const Footer = () => {
               </button>
               <p className="developer-version">
                 <span className="status-dot"></span>
-                Versión 1.0.0
+                Versión 2.0.0
               </p>
             </div>
 
