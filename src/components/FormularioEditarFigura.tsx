@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { optimizarImagen, subirASupabaseStorage } from '../services/imageService';
 
 interface FormularioEditarFiguraProps {
   figura: any;
@@ -7,192 +8,313 @@ interface FormularioEditarFiguraProps {
   onSaved: () => void;
 }
 
+interface CatalogoOpcion {
+  id: number;
+  nombre: string;
+  activo: boolean;
+}
+
 export default function FormularioEditarFigura({ figura, onCancel, onSaved }: FormularioEditarFiguraProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Estados para todos los campos (excepto foto_url que no se edita en esta iteración y codigo_interno que es inmutable)
-  const [formData, setFormData] = useState({
-    nombre: figura.nombre || '',
-    serie: figura.serie || '',
-    marca: figura.marca || '',
-    fabricante: figura.fabricante || '',
-    escala: figura.escala || '',
-    altura_cm: figura.altura_cm || '',
-    fecha_lanzamiento: figura.fecha_lanzamiento || '',
-    fecha_compra: figura.fecha_compra || '',
-    precio_compra: figura.precio_compra || '',
-    tienda: figura.tienda || '',
-    condicion: figura.condicion || '',
-    empaque: figura.empaque || '',
-    ubicacion: figura.ubicacion || '',
-    accesorios_completos: figura.accesorios_completos || '',
-    venderia: figura.venderia || '',
-    valor_sentimental: figura.valor_sentimental || '',
-    notas: figura.notas || ''
-  });
+  // Estados del formulario
+  const [nombre, setNombre] = useState(figura.nombre || '');
+  const [universoId, setUniversoId] = useState(figura.universo_id ? String(figura.universo_id) : '');
+  const [lineaId, setLineaId] = useState(figura.linea_id ? String(figura.linea_id) : '');
+  const [marcaId, setMarcaId] = useState(figura.marca_id ? String(figura.marca_id) : '');
+  const [fabricanteId, setFabricanteId] = useState(figura.fabricante_id ? String(figura.fabricante_id) : '');
+  const [baf, setBaf] = useState(Boolean(figura.baf));
+  const [anio, setAnio] = useState(figura.anio ? String(figura.anio) : '');
+  const [precio, setPrecio] = useState(figura.precio !== null && figura.precio !== undefined ? String(figura.precio) : '');
+  const [tamanoPulgadas, setTamanoPulgadas] = useState(figura.tamano_pulgadas ? String(figura.tamano_pulgadas) : '');
+  const [descripcion, setDescripcion] = useState(figura.descripcion || '');
+  const [newFile, setNewFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(figura.foto_url || null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Listas de catálogos
+  const [universos, setUniversos] = useState<CatalogoOpcion[]>([]);
+  const [lineas, setLineas] = useState<CatalogoOpcion[]>([]);
+  const [marcas, setMarcas] = useState<CatalogoOpcion[]>([]);
+  const [fabricantes, setFabricantes] = useState<CatalogoOpcion[]>([]);
+
+  useEffect(() => {
+    async function cargarCatalogos() {
+      try {
+        const [resUniv, resLin, resMar, resFab] = await Promise.all([
+          supabase.from('coleccion_universos').select('id, nombre, activo').order('nombre'),
+          supabase.from('coleccion_lineas').select('id, nombre, activo').order('nombre'),
+          supabase.from('coleccion_marcas').select('id, nombre, activo').order('nombre'),
+          supabase.from('coleccion_fabricantes').select('id, nombre, activo').order('nombre')
+        ]);
+
+        // Cargar los activos o el que ya tenga asignado la figura
+        if (resUniv.data) {
+          setUniversos(resUniv.data.filter(u => u.activo || u.id === figura.universo_id));
+        }
+        if (resLin.data) {
+          setLineas(resLin.data.filter(l => l.activo || l.id === figura.linea_id));
+        }
+        if (resMar.data) {
+          setMarcas(resMar.data.filter(m => m.activo || m.id === figura.marca_id));
+        }
+        if (resFab.data) {
+          setFabricantes(resFab.data.filter(f => f.activo || f.id === figura.fabricante_id));
+        }
+      } catch (err) {
+        console.error('Error al cargar catálogos:', err);
+      }
+    }
+    cargarCatalogos();
+  }, [figura]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files ? e.target.files[0] : null;
+    setNewFile(selected);
+    if (selected) {
+      setPreviewUrl(URL.createObjectURL(selected));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!nombre.trim()) {
+      setError('El nombre es obligatorio');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
+      let foto_url = figura.foto_url;
+
+      if (newFile) {
+        const optimizada = await optimizarImagen(newFile);
+        foto_url = await subirASupabaseStorage(optimizada, 'figuras');
+      }
+
       const payload = {
-        ...formData,
-        altura_cm: formData.altura_cm ? parseFloat(formData.altura_cm as string) : null,
-        precio_compra: formData.precio_compra ? parseFloat(formData.precio_compra as string) : null,
-        fecha_lanzamiento: formData.fecha_lanzamiento || null,
-        fecha_compra: formData.fecha_compra || null
+        nombre: nombre.trim(),
+        universo_id: universoId ? parseInt(universoId) : null,
+        linea_id: lineaId ? parseInt(lineaId) : null,
+        marca_id: marcaId ? parseInt(marcaId) : null,
+        fabricante_id: fabricanteId ? parseInt(fabricanteId) : null,
+        baf: Boolean(baf),
+        anio: anio ? parseInt(anio) : null,
+        precio: precio ? parseFloat(precio) : 0,
+        tamano_pulgadas: tamanoPulgadas ? parseFloat(tamanoPulgadas) : null,
+        descripcion: descripcion.trim() || null,
+        foto_url,
+        updated_at: new Date().toISOString()
       };
 
       const { error: supaError } = await supabase
-        .from('figuras')
+        .from('coleccion_figuras')
         .update(payload)
         .eq('id', figura.id);
 
       if (supaError) throw supaError;
+
       onSaved();
     } catch (err: any) {
       console.error(err);
-      setError('Error al actualizar la figura: ' + err.message);
+      setError(err.message || 'Error al actualizar la figura');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '2rem' }}>
-      <h3 className="gradient-text" style={{ marginTop: 0, marginBottom: '1.5rem' }}>Editar: {figura.codigo_interno}</h3>
+    <div>
+      <h3 className="gradient-text" style={{ fontSize: '1.4rem', marginBottom: '1rem' }}>
+        Editar Figura: {figura.nombre}
+      </h3>
+
+      {error && <div className="alert alert-error" style={{ marginBottom: '1rem' }}>{error}</div>}
+
       <form onSubmit={handleSubmit}>
-        
-        <div className="form-grid">
+        <div className="form-group">
+          <label>Nombre de la Figura *</label>
+          <input
+            type="text"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            required
+          />
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
           <div className="form-group">
-            <label>Nombre de la figura *</label>
-            <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required />
+            <label>Universo</label>
+            <select
+              value={universoId}
+              onChange={(e) => setUniversoId(e.target.value)}
+            >
+              <option value="">-- Sin Universo --</option>
+              {universos.map(u => (
+                <option key={u.id} value={u.id}>
+                  {u.nombre} {!u.activo ? '(Inactivo)' : ''}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">
-            <label>Serie / Anime</label>
-            <input type="text" name="serie" value={formData.serie} onChange={handleChange} />
+            <label>Línea</label>
+            <select
+              value={lineaId}
+              onChange={(e) => setLineaId(e.target.value)}
+            >
+              <option value="">-- Sin Línea --</option>
+              {lineas.map(l => (
+                <option key={l.id} value={l.id}>
+                  {l.nombre} {!l.activo ? '(Inactivo)' : ''}
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
 
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
           <div className="form-group">
             <label>Marca</label>
-            <input type="text" name="marca" value={formData.marca} onChange={handleChange} />
+            <select
+              value={marcaId}
+              onChange={(e) => setMarcaId(e.target.value)}
+            >
+              <option value="">-- Sin Marca --</option>
+              {marcas.map(m => (
+                <option key={m.id} value={m.id}>
+                  {m.nombre} {!m.activo ? '(Inactivo)' : ''}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">
             <label>Fabricante</label>
-            <input type="text" name="fabricante" value={formData.fabricante} onChange={handleChange} />
-          </div>
-
-          <div className="form-group">
-            <label>Escala (Ej. 1/7, 1/12)</label>
-            <input type="text" name="escala" value={formData.escala} onChange={handleChange} />
-          </div>
-
-          <div className="form-group">
-            <label>Altura (cm)</label>
-            <input type="number" step="0.1" name="altura_cm" value={formData.altura_cm} onChange={handleChange} />
-          </div>
-
-          <div className="form-group">
-            <label>Precio de Compra</label>
-            <input type="number" name="precio_compra" value={formData.precio_compra} onChange={handleChange} />
-          </div>
-
-          <div className="form-group">
-            <label>Tienda de Compra</label>
-            <input type="text" name="tienda" value={formData.tienda} onChange={handleChange} />
-          </div>
-
-          <div className="form-group">
-            <label>Fecha de Lanzamiento</label>
-            <input type="date" name="fecha_lanzamiento" value={formData.fecha_lanzamiento} onChange={handleChange} />
-          </div>
-
-          <div className="form-group">
-            <label>Fecha de Compra</label>
-            <input type="date" name="fecha_compra" value={formData.fecha_compra} onChange={handleChange} />
-          </div>
-
-          <div className="form-group">
-            <label>Condición</label>
-            <select name="condicion" value={formData.condicion} onChange={handleChange}>
-              <option value="">Seleccionar...</option>
-              <option value="Nueva (MISB)">Nueva (MISB)</option>
-              <option value="Como Nueva (MIB)">Como Nueva (MIB)</option>
-              <option value="Usada (Loose)">Usada (Loose)</option>
-              <option value="Dañada">Dañada</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Empaque</label>
-            <select name="empaque" value={formData.empaque} onChange={handleChange}>
-              <option value="">Seleccionar...</option>
-              <option value="Sellado">Sellado</option>
-              <option value="Abierto">Abierto</option>
-              <option value="Sin Caja">Sin Caja</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Ubicación Física</label>
-            <input type="text" name="ubicacion" value={formData.ubicacion} onChange={handleChange} placeholder="Ej: Vitrina 1, Caja 3" />
-          </div>
-
-          <div className="form-group">
-            <label>Accesorios Completos</label>
-            <select name="accesorios_completos" value={formData.accesorios_completos} onChange={handleChange}>
-              <option value="">Seleccionar...</option>
-              <option value="Si">Sí</option>
-              <option value="No">No</option>
-              <option value="Parcial">Parcial</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>¿Vendería?</label>
-            <select name="venderia" value={formData.venderia} onChange={handleChange}>
-              <option value="">Seleccionar...</option>
-              <option value="No">No</option>
-              <option value="Quizas">Quizás</option>
-              <option value="Si">Sí</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Valor Sentimental</label>
-            <select name="valor_sentimental" value={formData.valor_sentimental} onChange={handleChange}>
-              <option value="">Seleccionar...</option>
-              <option value="Alto">Alto</option>
-              <option value="Medio">Medio</option>
-              <option value="Bajo">Bajo</option>
+            <select
+              value={fabricanteId}
+              onChange={(e) => setFabricanteId(e.target.value)}
+            >
+              <option value="">-- Sin Fabricante --</option>
+              {fabricantes.map(f => (
+                <option key={f.id} value={f.id}>
+                  {f.nombre} {!f.activo ? '(Inactivo)' : ''}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
-        <div className="form-group" style={{ marginTop: '1rem' }}>
-          <label>Notas Adicionales</label>
-          <textarea name="notas" value={formData.notas} onChange={handleChange} rows={3}></textarea>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', alignItems: 'center' }}>
+          <div className="form-group">
+            <label>Año</label>
+            <input
+              type="number"
+              value={anio}
+              onChange={(e) => setAnio(e.target.value)}
+              min="1950"
+              max="2099"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Tamaño (pulgadas)</label>
+            <input
+              type="number"
+              step="0.1"
+              value={tamanoPulgadas}
+              onChange={(e) => setTamanoPulgadas(e.target.value)}
+              min="0"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Precio ($)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={precio}
+              onChange={(e) => setPrecio(e.target.value)}
+              min="0"
+            />
+          </div>
+
+          <div className="form-group" style={{ display: 'flex', flexDirection: 'column' }}>
+            <label style={{ marginBottom: '0.75rem' }}>¿Es BAF?</label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', cursor: 'pointer', margin: 0 }}>
+              <input
+                type="checkbox"
+                checked={baf}
+                onChange={(e) => setBaf(e.target.checked)}
+                style={{ width: '1.25rem', height: '1.25rem', accentColor: 'var(--primary)', cursor: 'pointer' }}
+              />
+              <span style={{ fontWeight: 600, color: baf ? 'var(--primary)' : 'var(--text-muted)' }}>
+                {baf ? 'Sí (BAF)' : 'No'}
+              </span>
+            </label>
+          </div>
         </div>
 
-        {error && <div className="alert alert-error" style={{ marginTop: '1rem' }}>{error}</div>}
+        <div className="form-group">
+          <label>Descripción / Notas</label>
+          <textarea
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            rows={3}
+            style={{
+              width: '100%',
+              padding: '0.85rem 1.2rem',
+              background: 'rgba(15, 23, 42, 0.7)',
+              border: '1px solid var(--border-color)',
+              borderRadius: '12px',
+              color: 'var(--text-main)',
+              fontFamily: 'inherit',
+              fontSize: '1rem',
+              resize: 'vertical'
+            }}
+          />
+        </div>
 
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-          <button type="button" className="btn btn-secondary" onClick={onCancel} style={{ flex: 1 }}>Cancelar</button>
-          <button type="submit" className="btn" disabled={loading} style={{ flex: 1 }}>
+        <div className="form-group">
+          <label>Cambiar Foto (opcional)</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+          {previewUrl && (
+            <div style={{ marginTop: '0.75rem', textAlign: 'center' }}>
+              <img
+                src={previewUrl}
+                alt="Vista previa"
+                style={{ maxHeight: '140px', borderRadius: '10px', objectFit: 'cover' }}
+              />
+            </div>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', justifyContent: 'flex-end' }}>
+          <button
+            type="button"
+            className="action-btn-sm"
+            onClick={onCancel}
+            disabled={loading}
+            style={{ padding: '0.75rem 1.5rem', fontSize: '1rem' }}
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            className="btn"
+            disabled={loading}
+            style={{ width: 'auto', padding: '0.75rem 1.5rem' }}
+          >
             {loading ? 'Guardando...' : 'Guardar Cambios'}
           </button>
         </div>
-
       </form>
     </div>
   );
